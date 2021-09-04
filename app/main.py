@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.DEBUG,
 
 TOKEN = os.getenv('TWITCH_TOKEN')
 SERVER = 'irc.chat.twitch.tv'
-NICCKNAME = os.getenv('TWITCH_NICKNAME')
+NICKNAME = os.getenv('TWITCH_NICKNAME')
 CHANNEL = os.getenv('TWITCH_CHANNEL')
 WS_PORT = 6667
 
@@ -35,7 +35,7 @@ def main():
     sock = socket.socket()
     sock.connect((SERVER, WS_PORT))
     sock.send(f"PASS {TOKEN}\r\n".encode('utf-8'))
-    sock.send(f"NICK {NICCKNAME}\r\n".encode('utf-8'))
+    sock.send(f"NICK {NICKNAME}\r\n".encode('utf-8'))
     sock.send(f"JOIN {CHANNEL}\r\n".encode('utf-8'))
 
     # Start prometheus client
@@ -52,7 +52,7 @@ def main():
             if resp.startswith('PING'):
                 sock.send("PONG\n".encode('utf-8'))
             elif len(resp) > 0:
-                if NICCKNAME in demojize(resp):
+                if NICKNAME in demojize(resp):
                     logging.info(demojize(resp))
                 else:
                     message = demojize(resp).split(f'{CHANNEL} :')[1]
