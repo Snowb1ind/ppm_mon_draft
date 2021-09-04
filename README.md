@@ -17,7 +17,8 @@ After that you can run the app using this command:
 
 `docker-compose up` **Requires [docker-compose](https://docs.docker.com/compose/) installed.*
 
-Prometheus now accessible at [localhost:9090](http://localhost:9090).
+Prometheus now accessible at [localhost:9090](http://localhost:9090). [Prometheus API Docs](https://prometheus.io/docs/prometheus/latest/querying/api/)
+For example to get the PPM metric you need to execute `rate(ppm_total[1m]) * 60` query.
 
 ## Optional configuration
 
