@@ -38,3 +38,4 @@ Prometheus now accesible at [localhost:9090](http://localhost:9090).
         #   networks:
         #     - ppm-mon
         #   restart: always```
+  * User and password `admin:foobar`
