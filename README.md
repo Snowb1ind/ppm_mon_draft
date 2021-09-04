@@ -13,17 +13,17 @@ TWITCH_NICKNAME: 'foobar'
 TWITCH_CHANNEL: '#lirik'
 ```
 
-After that you can run the app using this comand:
+After that you can run the app using this command:
 
 `docker-compose up` **Requires [docker-compose](https://docs.docker.com/compose/) installed.*
 
-Prometheus now accesible at [localhost:9090](http://localhost:9090).
+Prometheus now accessible at [localhost:9090](http://localhost:9090).
 
 ## Optional configuration
 
-* You can enable Grafana just by uncommenting these rows and accessing [localhost:3000](http://localhost:3000). It is provisioned and have example vusialization and prometheus datasource.
+* You can enable Grafana just by uncommenting these rows and accessing [localhost:3000](http://localhost:3000). It is provisioned and have example visualization and prometheus datasource.
+
   * ```yaml
-        # Uncomment to enable grafana
         # grafana:
         #   image: grafana/grafana
         #   depends_on:
@@ -38,4 +38,5 @@ Prometheus now accesible at [localhost:9090](http://localhost:9090).
         #   networks:
         #     - ppm-mon
         #   restart: always```
-  * User and password `admin:foobar`
+
+  * User and password is `admin:foobar`
