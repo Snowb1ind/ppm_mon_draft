@@ -53,26 +53,29 @@ FRS = [{"emote": "cogFR", "fr": "true", "fr_replacement": "None"},
 OGS = []
 
 # Start prometheus client and metrics
-emote_usage = Counter('emote_usage', 'Emotes usage counter', ['emote', 'fr', 'fr_replacement'])
+emote_usage = Counter('emote_usage',
+                      'Emotes usage counter',
+                      ['emote', 'fr', 'fr_replacement'])
 start_http_server(8000)
 
 
 async def check_for_emotes(data, writer):
+    """Check for emotes in message text"""
     try:
         if data.startswith('PING'):
             writer.write("PONG\n".encode('utf-8'))
         elif len(data) > 0:
-            if NICKNAME in demojize(data):
-                logging.info(demojize(data))
-            elif f'{CHANNEL} :' in demojize(data):
-                message = demojize(data).split(f'{CHANNEL} :')[1]
+            if NICKNAME in data:
+                logging.info(data)
+            elif f'{CHANNEL} :' in data:
+                message = data.split(f'{CHANNEL} :')[1]
                 for emote in FRS:
                     if emote["emote"] in message.split():
                         emote_usage.labels(emote["emote"],
                                            emote["fr"],
                                            emote["fr_replacement"]).inc()
             else:
-                logging.error(f"Can't process these message: {demojize(data)}")
+                logging.error(f"Can't process this message: {data}")
     except Exception as e:
         logging.error(e, exc_info=True)
 
@@ -91,7 +94,7 @@ async def main():
 
         while True:
             data = await reader.readuntil('\r\n'.encode('utf-8'))
-            asyncio.create_task(check_for_emotes(data.decode('utf-8'), writer))
+            asyncio.create_task(check_for_emotes(demojize(data.decode('utf-8')), writer))
 
     except Exception as e:
         logging.error(e, exc_info=True)

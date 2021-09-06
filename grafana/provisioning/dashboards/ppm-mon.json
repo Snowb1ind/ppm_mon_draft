@@ -330,7 +330,7 @@
           "refId": "A"
         }
       ],
-      "title": "Last 5",
+      "title": "Least 5",
       "transformations": [
         {
           "id": "organize",
@@ -548,7 +548,7 @@
             "value": "wiggleFR"
           }
         ],
-        "query": "cogFR,cuteFR,chokeFR,dinkFR,djFR,evilFR,ezFR,fallFR,feelsFR,FRpls,grinFR,Hapje,happyFR, hugFR,jumpFR,ladderFR,loveFR,LFRW,LPPM, ,MEGALUL,pauseFR,popFR,pteraFR,puzzleFR,ratFR,frunFR,Saje,spinFR,stealthFR,suitFR,swimFR,tripFR,trollFR,WAYTOOFR,wiggleFR",
+        "query": "cogFR,cuteFR,chokeFR,dinkFR,djFR,evilFR,ezFR,fallFR,feelsFR,FRpls,grinFR,Hapje,happyFR, hugFR,jumpFR,ladderFR,loveFR,LFRW,LPPM,MEGALUL,pauseFR,popFR,pteraFR,puzzleFR,ratFR,runFR,Saje,spinFR,stealthFR,suitFR,swimFR,tripFR,trollFR,WAYTOOFR,wiggleFR",
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
