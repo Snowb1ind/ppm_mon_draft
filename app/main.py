@@ -55,7 +55,8 @@ OGS = [{"emote": "Sadge", "fr": "false", "fr_replacement": "Saje"},
        {"emote": "KEKWiggle", "fr": "false", "fr_replacement": "wiggleFR"},
        {"emote": "pepeW", "fr": "false", "fr_replacement": "LFRW"},
        {"emote": "AlienPls", "fr": "false", "fr_replacement": "FRpls"},
-       {"emote": "FeelsStrongMan", "fr": "false", "fr_replacement": "feelsFR"}]
+       {"emote": "FeelsStrongMan", "fr": "false", "fr_replacement": "feelsFR"},
+       {"emote": "PauseChamp", "fr": "false", "fr_replacement": "pauseFR"}]
 
 # Start prometheus client and metrics
 emote_usage = Counter('emote_usage',
