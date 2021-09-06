@@ -14,20 +14,46 @@ NICKNAME = os.getenv('TWITCH_NICKNAME')
 CHANNEL = os.getenv('TWITCH_CHANNEL')
 WS_PORT = 6667
 
-POGS = ['PogChamp',
-        'lirikPOG',
-        'POGGERS',
-        'PogU',
-        'Pog',
-        'PogYou',
-        'PogT',
-        'LPPM']
+FRS = ['cogFR',
+        'cozy3',
+        'cuteFR',
+        'dinkFR',
+        'djFR',
+        'evilFR',
+        'ezFR',
+        'fallFR',
+        'feelsFR',
+        'FRpls',
+        'grinFR',
+        'Hapje',
+        'hugFR',
+        'jumpFR',
+        'ladderFR',
+        'LPPM',
+        'MEGALUL',
+        'pauseFR',
+        'popFR',
+        'pteraFR',
+        'puzzleFR',
+        'ratFR',
+        'runFR',
+        'Saje',
+        'spinFR',
+        'stealthFR',
+        'suitFR',
+        'swimFR',
+        'tripFR',
+        'trollFR',
+        'WAYTOOFR',
+        'LFRW',
+        'loveFR',
+        'happyFR']
 
-KEKWS = ['KEKW',
-         'LULW',
-         'KEKLEO',
-         'KEKYou',
-         'KEKL']
+# KEKWS = ['KEKW',
+#          'LULW',
+#          'KEKLEO',
+#          'KEKYou',
+#          'KEKL']
 
 
 def main():
@@ -38,9 +64,8 @@ def main():
     sock.send(f"NICK {NICKNAME}\r\n".encode('utf-8'))
     sock.send(f"JOIN {CHANNEL}\r\n".encode('utf-8'))
 
-    # Start prometheus client
-    ppm = Counter('ppm', 'PPM Counter')
-    kpm = Counter('kpm', 'KPM Counter')
+    # Start prometheus client and metrics
+    emote_usage = Counter('emote_usage', 'Emotes usage counter', ['emote', 'fr'])
     start_http_server(8000)
 
     try:
@@ -54,14 +79,19 @@ def main():
             elif len(resp) > 0:
                 if NICKNAME in demojize(resp):
                     logging.info(demojize(resp))
-                else:
+                elif f'{CHANNEL} :' in demojize(resp):
                     message = demojize(resp).split(f'{CHANNEL} :')[1]
-                    # PPM checking
-                    if any(emote in message.split() for emote in POGS):
-                        ppm.inc()
-                    # KPM checking
-                    if any(emote in message.split() for emote in KEKWS):
-                        kpm.inc()
+                    # # PPM checking
+                    # if any(emote in message.split() for emote in POGS):
+                    #     ppm.inc()
+                    # # KPM checking
+                    # if any(emote in message.split() for emote in KEKWS):
+                    #     kpm.inc()
+                    for emote in FRS:
+                        if emote in message.split():
+                            emote_usage.labels(emote, 'true').inc()
+                else:
+                    logging.error(f"Can't process these message: {demojize(resp)}")
     except KeyboardInterrupt:
         sock.close()
         exit()

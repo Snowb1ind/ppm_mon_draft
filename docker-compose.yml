@@ -1,55 +1,67 @@
 version: '3.7'
-
-volumes:
-    prometheus_data: {}
-    grafana_data: {}
-
-networks:
-  ppm-mon:
-
 services:
-  prometheus:
-    image: prom/prometheus:v2.1.0
-    volumes:
-      - ./prometheus/:/etc/prometheus/
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
+  vmagent:
+    container_name: vmagent
+    image: victoriametrics/vmagent
+    depends_on:
+      - "victoriametrics"
     ports:
-      - 9090:9090
+      - 8429:8429
+    volumes:
+      - vmagentdata:/vmagentdata
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--promscrape.config=/etc/prometheus/prometheus.yml'
+      - '--remoteWrite.url=http://victoriametrics:8428/api/v1/write'
     networks:
-      - ppm-mon
+      - vm_net
     restart: always
 
-  # Uncomment to enable grafana
-  # grafana:
-  #   image: grafana/grafana
-  #   depends_on:
-  #     - prometheus
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - grafana_data:/var/lib/grafana
-  #     - ./grafana/provisioning/:/etc/grafana/provisioning/
-  #   env_file:
-  #     - ./grafana/config.monitoring
-  #   networks:
-  #     - ppm-mon
-  #   restart: always
+  victoriametrics:
+    container_name: victoriametrics
+    image: victoriametrics/victoria-metrics
+    ports:
+      - 8428:8428
+    volumes:
+      - vmdata:/storage
+    command:
+      - '--storageDataPath=/storage'
+      - '--httpListenAddr=:8428'
+    networks:
+      - vm_net
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - victoriametrics
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    networks:
+      - vm_net
+    restart: always
 
   ppm-mon:
     build: .
     depends_on:
-      - prometheus
-    # ports:
-    #   - 8000:8000
+      - victoriametrics
+    ports:
+      - 8000:8000
     networks:
-      - ppm-mon
+      - vm_net
     restart: always
     environment:
-      TWITCH_TOKEN: 'PUT_YOUR_TOKEN_HERE'
-      TWITCH_NICKNAME: 'PUT_YOUR_NICKNAME_HERE'
-      TWITCH_CHANNEL: '#PUT_YOUR_CHANNEL_HERE'
+      TWITCH_TOKEN: 'YOUR_TOKEN_HERE'
+      TWITCH_NICKNAME: 'YOUR_NICKNAME_HERE'
+      TWITCH_CHANNEL: '#YOUR_CHANNEL_HERE'
+volumes:
+  vmagentdata: {}
+  vmdata: {}
+  grafana_data: {}
+networks:
+  vm_net:
