@@ -14,49 +14,47 @@ NICKNAME = os.getenv('TWITCH_NICKNAME')
 CHANNEL = os.getenv('TWITCH_CHANNEL')
 WS_PORT = 6667
 
-FRS = ['cogFR',
-        'cozy3',
-        'cuteFR',
-        'dinkFR',
-        'djFR',
-        'evilFR',
-        'ezFR',
-        'fallFR',
-        'feelsFR',
-        'FRpls',
-        'grinFR',
-        'Hapje',
-        'hugFR',
-        'jumpFR',
-        'ladderFR',
-        'LPPM',
-        'MEGALUL',
-        'pauseFR',
-        'popFR',
-        'pteraFR',
-        'puzzleFR',
-        'ratFR',
-        'runFR',
-        'Saje',
-        'spinFR',
-        'stealthFR',
-        'suitFR',
-        'swimFR',
-        'tripFR',
-        'trollFR',
-        'WAYTOOFR',
-        'LFRW',
-        'loveFR',
-        'happyFR']
+FRS = [{"emote": "cogFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "cuteFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "chokeFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "dinkFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "djFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "evilFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "ezFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "fallFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "feelsFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "FRpls", "fr": "true", "fr_replacement": "None"},
+       {"emote": "grinFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "Hapje", "fr": "true", "fr_replacement": "None"},
+       {"emote": "happyFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "hugFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "jumpFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "ladderFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "loveFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "LFRW", "fr": "true", "fr_replacement": "None"},
+       {"emote": "LPPM", "fr": "true", "fr_replacement": "None"},
+       {"emote": "MEGALUL", "fr": "true", "fr_replacement": "None"},
+       {"emote": "pauseFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "popFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "pteraFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "puzzleFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "ratFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "runFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "Saje", "fr": "true", "fr_replacement": "None"},
+       {"emote": "spinFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "stealthFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "suitFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "swimFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "tripFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "trollFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "WAYTOOFR", "fr": "true", "fr_replacement": "None"},
+       {"emote": "wiggleFR", "fr": "true", "fr_replacement": "None"}]
+
+OGS = []
 
 # Start prometheus client and metrics
-emote_usage = Counter('emote_usage', 'Emotes usage counter', ['emote', 'fr'])
+emote_usage = Counter('emote_usage', 'Emotes usage counter', ['emote', 'fr', 'fr_replacement'])
 start_http_server(8000)
-
-
-def test(message, emote):
-    if emote in message.split():
-        return emote
 
 
 async def check_for_emotes(data, writer):
@@ -68,10 +66,11 @@ async def check_for_emotes(data, writer):
                 logging.info(demojize(data))
             elif f'{CHANNEL} :' in demojize(data):
                 message = demojize(data).split(f'{CHANNEL} :')[1]
-                for emote in asyncio.as_completed(map(test, message, FRS)):
-                    earliest_result = await emote
-                    # if emote in message.split():
-                    emote_usage.labels(earliest_result, 'true').inc()
+                for emote in FRS:
+                    if emote["emote"] in message.split():
+                        emote_usage.labels(emote["emote"],
+                                           emote["fr"],
+                                           emote["fr_replacement"]).inc()
             else:
                 logging.error(f"Can't process these message: {demojize(data)}")
     except Exception as e:
@@ -100,4 +99,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main(), debug=True)
+    asyncio.run(main())

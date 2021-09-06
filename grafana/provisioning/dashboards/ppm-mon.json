@@ -21,7 +21,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 2,
+  "iteration": 1630949378819,
   "links": [],
   "panels": [
     {
@@ -29,16 +30,47 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
-          "decimals": 0,
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#cbdbe1",
+                "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           }
@@ -47,96 +79,33 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 24,
         "x": 0,
         "y": 0
       },
-      "id": 4,
+      "id": 7,
       "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "/^PPM$/",
-          "values": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
         },
-        "text": {},
-        "textMode": "auto"
+        "tooltip": {
+          "mode": "single"
+        }
       },
-      "pluginVersion": "8.1.2",
       "targets": [
         {
           "exemplar": true,
-          "expr": "increase(ppm_total[$__range])",
-          "hide": false,
+          "expr": "sort_desc(sum(increase(emote_usage_total{emote='$fr_emote'}[1y])) by (emote))",
+          "instant": false,
           "interval": "",
-          "legendFormat": "PPM",
+          "legendFormat": "{{emote}}",
           "refId": "A"
         }
       ],
-      "title": "Pogs Total",
-      "type": "stat"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 0,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#9a5044",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "id": 5,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "/^PPM$/",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.1.2",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "increase(kpm_total[$__range])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "PPM",
-          "refId": "A"
-        }
-      ],
-      "title": "KEKWs Total",
-      "type": "stat"
+      "title": "FR Emote stat and Comparasing",
+      "type": "timeseries"
     },
     {
       "datasource": null,
@@ -146,7 +115,7 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisLabel": "Per Minute",
+            "axisLabel": "Usage",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
@@ -157,12 +126,12 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "smooth",
+            "lineInterpolation": "stepBefore",
             "lineStyle": {
               "fill": "solid"
             },
             "lineWidth": 2,
-            "pointSize": 5,
+            "pointSize": 4,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -202,21 +171,6 @@
                 }
               }
             ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "KEKW"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#9a5044",
-                  "mode": "fixed"
-                }
-              }
-            ]
           }
         ]
       },
@@ -230,7 +184,7 @@
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "list",
+          "displayMode": "hidden",
           "placement": "right"
         },
         "tooltip": {
@@ -240,24 +194,156 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "rate(ppm_total[1m]) * 60",
+          "expr": "sort_desc(sum(increase(emote_usage_total[1y])) by (emote))",
           "interval": "",
-          "legendFormat": "Pog",
+          "legendFormat": "{{emote}}",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "rate(kpm_total[1m]) * 60",
-          "hide": false,
-          "instant": false,
+          "expr": "emote_usage_total",
+          "hide": true,
           "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "KEKW",
+          "legendFormat": "{{emote}}",
           "refId": "B"
         }
       ],
-      "title": "PPM vs KPM",
+      "title": "FR Emotes",
       "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "displayMode": "auto"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 4,
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Value"
+          }
+        ]
+      },
+      "pluginVersion": "8.1.2",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "topk(5, sum by (emote) (increase(emote_usage_total[1y])))",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{emote}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 5",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "displayMode": "auto"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 5,
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Value"
+          }
+        ]
+      },
+      "pluginVersion": "8.1.2",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "bottomk(5, sum by (emote) (increase(emote_usage_total[1y])))",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{emote}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Last 5",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
     }
   ],
   "refresh": "5s",
@@ -265,15 +351,217 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "cogFR",
+          "value": "cogFR"
+        },
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "FR Emote",
+        "multi": false,
+        "name": "fr_emote",
+        "options": [
+          {
+            "selected": true,
+            "text": "cogFR",
+            "value": "cogFR"
+          },
+          {
+            "selected": false,
+            "text": "cuteFR",
+            "value": "cuteFR"
+          },
+          {
+            "selected": false,
+            "text": "chokeFR",
+            "value": "chokeFR"
+          },
+          {
+            "selected": false,
+            "text": "dinkFR",
+            "value": "dinkFR"
+          },
+          {
+            "selected": false,
+            "text": "djFR",
+            "value": "djFR"
+          },
+          {
+            "selected": false,
+            "text": "evilFR",
+            "value": "evilFR"
+          },
+          {
+            "selected": false,
+            "text": "ezFR",
+            "value": "ezFR"
+          },
+          {
+            "selected": false,
+            "text": "fallFR",
+            "value": "fallFR"
+          },
+          {
+            "selected": false,
+            "text": "feelsFR",
+            "value": "feelsFR"
+          },
+          {
+            "selected": false,
+            "text": "FRpls",
+            "value": "FRpls"
+          },
+          {
+            "selected": false,
+            "text": "grinFR",
+            "value": "grinFR"
+          },
+          {
+            "selected": false,
+            "text": "Hapje",
+            "value": "Hapje"
+          },
+          {
+            "selected": false,
+            "text": "happyFR",
+            "value": "happyFR"
+          },
+          {
+            "selected": false,
+            "text": "hugFR",
+            "value": "hugFR"
+          },
+          {
+            "selected": false,
+            "text": "jumpFR",
+            "value": "jumpFR"
+          },
+          {
+            "selected": false,
+            "text": "ladderFR",
+            "value": "ladderFR"
+          },
+          {
+            "selected": false,
+            "text": "loveFR",
+            "value": "loveFR"
+          },
+          {
+            "selected": false,
+            "text": "LFRW",
+            "value": "LFRW"
+          },
+          {
+            "selected": false,
+            "text": "LPPM",
+            "value": "LPPM"
+          },
+          {
+            "selected": false,
+            "text": "",
+            "value": ""
+          },
+          {
+            "selected": false,
+            "text": "MEGALUL",
+            "value": "MEGALUL"
+          },
+          {
+            "selected": false,
+            "text": "pauseFR",
+            "value": "pauseFR"
+          },
+          {
+            "selected": false,
+            "text": "popFR",
+            "value": "popFR"
+          },
+          {
+            "selected": false,
+            "text": "pteraFR",
+            "value": "pteraFR"
+          },
+          {
+            "selected": false,
+            "text": "puzzleFR",
+            "value": "puzzleFR"
+          },
+          {
+            "selected": false,
+            "text": "ratFR",
+            "value": "ratFR"
+          },
+          {
+            "selected": false,
+            "text": "frunFR",
+            "value": "frunFR"
+          },
+          {
+            "selected": false,
+            "text": "Saje",
+            "value": "Saje"
+          },
+          {
+            "selected": false,
+            "text": "spinFR",
+            "value": "spinFR"
+          },
+          {
+            "selected": false,
+            "text": "stealthFR",
+            "value": "stealthFR"
+          },
+          {
+            "selected": false,
+            "text": "suitFR",
+            "value": "suitFR"
+          },
+          {
+            "selected": false,
+            "text": "swimFR",
+            "value": "swimFR"
+          },
+          {
+            "selected": false,
+            "text": "tripFR",
+            "value": "tripFR"
+          },
+          {
+            "selected": false,
+            "text": "trollFR",
+            "value": "trollFR"
+          },
+          {
+            "selected": false,
+            "text": "WAYTOOFR",
+            "value": "WAYTOOFR"
+          },
+          {
+            "selected": false,
+            "text": "wiggleFR",
+            "value": "wiggleFR"
+          }
+        ],
+        "query": "cogFR,cuteFR,chokeFR,dinkFR,djFR,evilFR,ezFR,fallFR,feelsFR,FRpls,grinFR,Hapje,happyFR, hugFR,jumpFR,ladderFR,loveFR,LFRW,LPPM, ,MEGALUL,pauseFR,popFR,pteraFR,puzzleFR,ratFR,frunFR,Saje,spinFR,stealthFR,suitFR,swimFR,tripFR,trollFR,WAYTOOFR,wiggleFR",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-12h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "PPM/KPM Monitoring",
-  "uid": "I9UOKwV7z",
-  "version": 1
+  "title": "Emotes Mon",
+  "uid": "7HEdreVnk",
+  "version": 2
 }
