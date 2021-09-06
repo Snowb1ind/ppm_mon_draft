@@ -1,7 +1,7 @@
 from prometheus_client import start_http_server, Counter
 from emoji import demojize
 import logging
-import socket
+import asyncio
 import os
 
 logging.basicConfig(level=logging.DEBUG,
@@ -49,57 +49,55 @@ FRS = ['cogFR',
         'loveFR',
         'happyFR']
 
-# KEKWS = ['KEKW',
-#          'LULW',
-#          'KEKLEO',
-#          'KEKYou',
-#          'KEKL']
+# Start prometheus client and metrics
+emote_usage = Counter('emote_usage', 'Emotes usage counter', ['emote', 'fr'])
+start_http_server(8000)
 
 
-def main():
-    # Connect to Twitch WebSocket
-    sock = socket.socket()
-    sock.connect((SERVER, WS_PORT))
-    sock.send(f"PASS {TOKEN}\r\n".encode('utf-8'))
-    sock.send(f"NICK {NICKNAME}\r\n".encode('utf-8'))
-    sock.send(f"JOIN {CHANNEL}\r\n".encode('utf-8'))
+def test(message, emote):
+    if emote in message.split():
+        return emote
 
-    # Start prometheus client and metrics
-    emote_usage = Counter('emote_usage', 'Emotes usage counter', ['emote', 'fr'])
-    start_http_server(8000)
 
+async def check_for_emotes(data, writer):
     try:
-        while True:
-            # Receive message
-            resp = sock.recv(2048).decode('utf-8')
-
-            # Parse mmessage
-            if resp.startswith('PING'):
-                sock.send("PONG\n".encode('utf-8'))
-            elif len(resp) > 0:
-                if NICKNAME in demojize(resp):
-                    logging.info(demojize(resp))
-                elif f'{CHANNEL} :' in demojize(resp):
-                    message = demojize(resp).split(f'{CHANNEL} :')[1]
-                    # # PPM checking
-                    # if any(emote in message.split() for emote in POGS):
-                    #     ppm.inc()
-                    # # KPM checking
-                    # if any(emote in message.split() for emote in KEKWS):
-                    #     kpm.inc()
-                    for emote in FRS:
-                        if emote in message.split():
-                            emote_usage.labels(emote, 'true').inc()
-                else:
-                    logging.error(f"Can't process these message: {demojize(resp)}")
-    except KeyboardInterrupt:
-        sock.close()
-        exit()
+        if data.startswith('PING'):
+            writer.write("PONG\n".encode('utf-8'))
+        elif len(data) > 0:
+            if NICKNAME in demojize(data):
+                logging.info(demojize(data))
+            elif f'{CHANNEL} :' in demojize(data):
+                message = demojize(data).split(f'{CHANNEL} :')[1]
+                for emote in asyncio.as_completed(map(test, message, FRS)):
+                    earliest_result = await emote
+                    # if emote in message.split():
+                    emote_usage.labels(earliest_result, 'true').inc()
+            else:
+                logging.error(f"Can't process these message: {demojize(data)}")
     except Exception as e:
         logging.error(e, exc_info=True)
-        sock.close()
-        exit()
+
+
+async def main():
+    try:
+        # Connect to Twitch
+        reader, writer = await asyncio.open_connection(SERVER, WS_PORT)
+
+        # Login to Twitch chat
+        lines = [f'PASS {TOKEN}\r\n'.encode('utf-8'),
+                 f'NICK {NICKNAME}\r\n'.encode('utf-8'),
+                 f'JOIN {CHANNEL}\r\n'.encode('utf-8')]
+        writer.writelines(lines)
+        await writer.drain()
+
+        while True:
+            data = await reader.readuntil('\r\n'.encode('utf-8'))
+            asyncio.create_task(check_for_emotes(data.decode('utf-8'), writer))
+
+    except Exception as e:
+        logging.error(e, exc_info=True)
+        writer.close()
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main(), debug=True)
