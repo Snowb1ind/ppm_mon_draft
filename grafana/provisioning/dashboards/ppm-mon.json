@@ -22,7 +22,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1630949378819,
+  "iteration": 1630962966086,
   "links": [],
   "panels": [
     {
@@ -102,9 +102,18 @@
           "interval": "",
           "legendFormat": "{{emote}}",
           "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "sort_desc(sum(increase(emote_usage_total{fr_replacement='$fr_emote'}[1y])) by (emote))",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{emote}}",
+          "refId": "B"
         }
       ],
-      "title": "FR Emote stat and Comparasing",
+      "title": "Single emote stat and comparing to original [if available]",
       "type": "timeseries"
     },
     {
@@ -194,7 +203,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sort_desc(sum(increase(emote_usage_total[1y])) by (emote))",
+          "expr": "sort_desc(sum(increase(emote_usage_total{fr=\"true\"}[1y])) by (emote))",
           "interval": "",
           "legendFormat": "{{emote}}",
           "refId": "A"
@@ -208,7 +217,7 @@
           "refId": "B"
         }
       ],
-      "title": "FR Emotes",
+      "title": "All FR Emotes",
       "type": "timeseries"
     },
     {
@@ -255,7 +264,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "topk(5, sum by (emote) (increase(emote_usage_total[1y])))",
+          "expr": "topk(5, sum by (emote) (increase(emote_usage_total{fr=\"true\"}[1y])))",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -322,7 +331,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "bottomk(5, sum by (emote) (increase(emote_usage_total[1y])))",
+          "expr": "bottomk(5, sum by (emote) (increase(emote_usage_total{fr=\"true\"}[1y])))",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -563,5 +572,5 @@
   "timezone": "",
   "title": "Emotes Mon",
   "uid": "7HEdreVnk",
-  "version": 2
+  "version": 8
 }

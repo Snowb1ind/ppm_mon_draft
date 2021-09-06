@@ -50,7 +50,12 @@ FRS = [{"emote": "cogFR", "fr": "true", "fr_replacement": "None"},
        {"emote": "WAYTOOFR", "fr": "true", "fr_replacement": "None"},
        {"emote": "wiggleFR", "fr": "true", "fr_replacement": "None"}]
 
-OGS = []
+OGS = [{"emote": "Sadge", "fr": "false", "fr_replacement": "Saje"},
+       {"emote": "peepoTrip", "fr": "false", "fr_replacement": "tripFR"},
+       {"emote": "KEKWiggle", "fr": "false", "fr_replacement": "wiggleFR"},
+       {"emote": "pepeW", "fr": "false", "fr_replacement": "LFRW"},
+       {"emote": "AlienPls", "fr": "false", "fr_replacement": "FRpls"},
+       {"emote": "FeelsStrongMan", "fr": "false", "fr_replacement": "feelsFR"}]
 
 # Start prometheus client and metrics
 emote_usage = Counter('emote_usage',
@@ -69,7 +74,7 @@ async def check_for_emotes(data, writer):
                 logging.info(data)
             elif f'{CHANNEL} :' in data:
                 message = data.split(f'{CHANNEL} :')[1]
-                for emote in FRS:
+                for emote in FRS + OGS:
                     if emote["emote"] in message.split():
                         emote_usage.labels(emote["emote"],
                                            emote["fr"],
